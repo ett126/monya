@@ -9,12 +9,14 @@ module.exports=require("../js/lang.js")({ja:require("./ja/manageCoin.html"),en:r
     password:"",
     incorrect:false,
     infoDlg:false,
+    editDlg:false,
     info:{
       blocks:[],
       coinId:"",
       unit:"",
       apiEndpoint:""
-    }
+    },
+    c:{}
   }),
   methods:{
     push(){
@@ -77,6 +79,42 @@ module.exports=require("../js/lang.js")({ja:require("./ja/manageCoin.html"),en:r
         this.info.blocks=r
       })
     },
+    editCoinParam(coinId){
+      this.editDlg=true
+      const cur=currencyList.get(coinId)
+      this.$set(this,"c",{
+        coinScreenName:cur.coinScreenName,
+        coinId:cur.coinId,
+        unit:cur.unit,
+        unitEasy:cur.unitEasy,
+        bip44:cur.bip44||{},
+        bip49:cur.bip49||{},
+        bip21:cur.bip21,
+        defaultFeeSatPerByte:cur.defaultFeeSatPerByte,
+        icon:cur.icon,
+        defaultAPIEndpoint:cur.apiEndpoints[0],
+        
+        explorer:cur.explorer,
+        network:{
+          messagePrefix: cur.network.messagePrefix,
+          bip32: {
+            public: cur.network.bip32.public|0,
+            
+            private: cur.network.bip32.private|0
+          },
+          pubKeyHash: cur.network.pubKeyHash|0,
+          scriptHash: cur.network.scriptHash|0,
+          wif: cur.network.wif|0
+        },
+        
+        enableSegwit:cur.enableSegwit,
+        lib:cur.libName,
+        price:cur.price||{},
+        confirmations:6,
+        counterpartyEndpoint:cur.counterpartyEndpoint
+      })
+      
+    },
     changeServer(){
       const cur=currencyList.get(this.info.coinId)
       cur.changeApiEndpoint()
@@ -84,11 +122,50 @@ module.exports=require("../js/lang.js")({ja:require("./ja/manageCoin.html"),en:r
     },
     openBlock(h){
       currencyList.get(this.info.coinId).openExplorer({blockHash:h})
+    },
+    save(coinId){
+      storage.get("customCoins").then(r=>{
+        r=r||[]
+        r.push(this.c)
+        this.editDlg=false
+        return storage.set("customCoins",r)
+      })
     }
   },
   
   store:require("../js/store.js"),
   mounted(){
     this.$nextTick(this.load)
+  },
+  computed:{
+    priceJsonPath:{
+      get(){
+        if(!this.c||!this.c.price||!this.c.price.url){return ""}
+        return this.c.price.jsonPath.join(".")
+      },
+      set(d){
+        if(!this.c||!this.c.price||!this.c.price.url){return ""}
+        this.c.price.jsonPath= d.split(".")
+      }
+    },
+    messagePrefix:{
+      get(){
+        return JSON.stringify(this.c.network.messagePrefix).slice(1,-1)
+      },set(d){
+        try{
+          this.c.network.messagePrefix = eval("'"+ d +"'")
+        }catch(e){
+          
+        }
+      }
+    },
+    enableSegwit:{
+      get(){
+        return this.c.enableSegwit==="legacy"
+      },
+      set(d){
+        return !!(this.c.enableSegwit=d?"legacy":false)
+      }
+    }
   }
 });

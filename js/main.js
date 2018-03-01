@@ -4,7 +4,7 @@ require('../res/onsenui/css/onsen-css-components.min.css')
 if(!window.cordova){
   require('../res/cordova-plugin-qrscanner-lib.min.js')
 }
-const Vue = require("vue/dist/vue.runtime.min")
+const Vue = require("vue/dist/vue.runtime")
 const VueOnsen = require('vue-onsenui')
 const Vuex = require("vuex")
 const template = require("../lang/template.json")
@@ -51,9 +51,7 @@ exports.vm= new Vue({
 })
 const coinUtil=require("../js/coinUtil")
 window.handleOpenURL=function(url) {
-  if (!window.cordova||window.cordova&&(window.cordova.platformName=="browser")) {
-    return 
-  }
+  
   coinUtil.queueUrl(url)
 }
 

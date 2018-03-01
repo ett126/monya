@@ -11,6 +11,7 @@
       <div class="center">
         <div class="screenName">{{c.screenName}}</div>
         <v-ons-button modifier="quiet" @click="showInfo(c.coinId)"><v-ons-icon icon="ion-ios-information"></v-ons-icon></v-ons-button>
+        <v-ons-button modifier="quiet" @click="editCoinParam(c.coinId)"><v-ons-icon icon="ion-edit"></v-ons-icon></v-ons-button>
       </div>
       <div class="right">
         <v-ons-checkbox v-model="c.usable"></v-ons-checkbox>
@@ -22,6 +23,7 @@
       <div class="center">
         <div class="screenName">{{c.screenName}}</div>
         <v-ons-button modifier="quiet" @click="showInfo(c.coinId)"><v-ons-icon icon="ion-ios-information"></v-ons-icon></v-ons-button>
+        <v-ons-button modifier="quiet" @click="editCoinParam(c.coinId)"><v-ons-icon icon="ion-edit"></v-ons-icon></v-ons-button>
       </div>
       <div class="right">
         <v-ons-checkbox v-model="c.usable"></v-ons-checkbox>
@@ -70,5 +72,167 @@
         <div class="right"><timestamp :timestamp="b.time"></timestamp></div>
       </v-ons-list-item>
     </v-ons-list>
+  </v-ons-dialog>
+  
+  <v-ons-dialog cancelable
+                :visible.sync="editDlg"
+                >
+    <v-ons-list>
+      <div v-if="editDlg">
+        <v-ons-list-item>
+          <div class="center">ID</div>
+          <div class="right">
+            {{c.coinId}}
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">名</div>
+          <div class="right">
+            <v-ons-input v-model="c.coinScreenName" placeholder="名"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        
+        <v-ons-list-item>
+          <div class="center"></div>
+          <div class="right">
+            <v-ons-input v-model="c.unit" placeholder=""></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">の簡単な表記</div>
+          <div class="right">
+            <v-ons-input v-model="c.unitEasy" placeholder="簡単な"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">SegWit</div>
+          <div class="right">
+            <v-ons-switch v-model="enableSegwit"></v-ons-switch>
+          </div>
+        </v-ons-list-item>
+        <div v-show="enableSegwit">
+          <v-ons-list-item>
+            <div class="center">BIP 49 タイプ</div>
+            <div class="right">
+              <v-ons-input v-model="c.bip49.coinType" type="number"></v-ons-input>
+            </div>
+          </v-ons-list-item>
+          <v-ons-list-item>
+            <div class="center">BIP 49 アカウント番号</div>
+            <div class="right">
+              <v-ons-input v-model="c.bip49.account" type="number"></v-ons-input>
+            </div>
+          </v-ons-list-item>
+        </div>
+        <div v-show="!enableSegwit">
+          <v-ons-list-item>
+            <div class="center">BIP 44 タイプ</div>
+            <div class="right">
+              <v-ons-input v-model="c.bip44.coinType" type="number"></v-ons-input>
+            </div>
+          </v-ons-list-item>
+          <v-ons-list-item>
+            <div class="center">BIP 44 アカウント番号</div>
+            <div class="right">
+              <v-ons-input v-model="c.bip44.account" type="number"></v-ons-input>
+            </div>
+          </v-ons-list-item>
+        </div>
+        <v-ons-list-item>
+          <div class="center">BIP 21 スキーム</div>
+          <div class="right">
+            <v-ons-input v-model="c.bip21" placeholder="BIP21"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">初期値</div>
+          <div class="right">
+            <v-ons-input v-model="c.defaultFeeSatPerByte" type="number"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">API</div>
+          <div class="right">
+            <v-ons-input v-model="c.defaultAPIEndpoint" placeholder="API"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">エクスプローラ</div>
+          <div class="right">
+            <v-ons-input v-model="c.explorer" placeholder="エクスプローラ"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-header>ネットワーク</v-ons-list-header>
+        <v-ons-list-item>
+          <div class="center">プレフィックス</div>
+          <div class="right">
+            <v-ons-input v-model="messagePrefix" placeholder="プレフィックス"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">BIP32マスター(uint32_t 10進数)</div>
+          <div class="right">
+            <v-ons-input v-model="c.network.bip32.public" type="number"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">BIP32マスター(uint32_t 10進数)</div>
+          <div class="right">
+            <v-ons-input v-model="c.network.bip32.private" type="number"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">uint8_t PubKeyHash</div>
+          <div class="right">
+            <v-ons-input v-model="c.network.pubKeyHash" type="number"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">uint8_t ScriptHash</div>
+          <div class="right">
+            <v-ons-input v-model="c.network.scriptHash" type="number"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">uint8_t WIF</div>
+          <div class="right">
+            <v-ons-input v-model="c.network.wif" type="number"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        
+        <v-ons-list-header>価格</v-ons-list-header>
+        <v-ons-list-item>
+          <div class="center">JSON API URL</div>
+          <div class="right">
+            <v-ons-input v-model="c.price.url" placeholder="URL"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">JSON Path(ドット区切り)</div>
+          <div class="right">
+            <v-ons-input v-model="priceJsonPath" placeholder="JSON Path"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">基軸通貨ID</div>
+          <div class="right">
+            <v-ons-input v-model="c.price.fiat" placeholder="Fiat ID"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-header></v-ons-list-header>
+        <v-ons-list-item>
+          <div class="center">CPURL</div>
+          <div class="right">
+            <v-ons-input v-model="c.counterpartyEndpoint" placeholder="CP Endpoint"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">次回の起動時適用</div>
+          <div class="right">
+            <v-ons-button @click="save(c.coinId)"></v-ons-button>
+          </div>
+        </v-ons-list-item>
+      </div>
+    </v-ons-list>    
   </v-ons-dialog>
 </v-ons-page>
