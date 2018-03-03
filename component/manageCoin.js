@@ -166,7 +166,7 @@ module.exports=require("../js/lang.js")({ja:require("./ja/manageCoin.html"),en:r
         try{
           this.c.network.messagePrefix = eval("'"+ d +"'")
         }catch(e){
-          
+          this.c.network.messagePrefix = ""
         }
       }
     },

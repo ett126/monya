@@ -19,7 +19,7 @@
     "no-extra-bind": 1,
     "no-empty-label": 0,
     "no-unreachable": 2,
-    "no-eval": 2,
+    "no-eval": 1,
     "array-bracket-spacing": 0,
     "block-scoped-var": 2,
     "arrow-body-style": 0,
