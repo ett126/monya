@@ -1,5 +1,8 @@
 <v-ons-page data-page="manageCoin">
   <custom-bar title="コインの管理">
+    <v-ons-toolbar-button @click="resetCur=true">
+      <v-ons-icon icon="fa-eraser"></v-ons-icon>
+    </v-ons-toolbar-button>
     <v-ons-toolbar-button @click="requirePassword=true">
       <v-ons-icon icon="ion-checkmark"></v-ons-icon>
     </v-ons-toolbar-button>
@@ -42,6 +45,17 @@
       <div class="alert-dialog-button" @click="operateCoins">続行</div>
     </template>
   </v-ons-alert-dialog>
+  <v-ons-alert-dialog
+    modifier="rowfooter"
+    :visible.sync="resetCur"
+    >
+    <span slot="title">パラメータをリセット</span>
+    <p>コインパラメータをリセットしますか？編集した内容は失われます</p>
+    <template slot="footer">
+      <div class="alert-dialog-button" @click="resetCur=false">やめる</div>
+      <div class="alert-dialog-button" @click="reset">続行</div>
+    </template>
+  </v-ons-alert-dialog>
 
   <v-ons-modal :visible="loading">
     <p style="text-align: center">
@@ -82,7 +96,7 @@
         <v-ons-list-item>
           <div class="center">コインID</div>
           <div class="right">
-            {{c.coinId}}
+            <v-ons-input v-model="c.coinId" placeholder="コイン表示名"></v-ons-input>
           </div>
         </v-ons-list-item>
         <v-ons-list-item>
@@ -224,6 +238,12 @@
           <div class="center">CPエンドポイントURL</div>
           <div class="right">
             <v-ons-input v-model="c.counterpartyEndpoint" placeholder="CP Endpoint"></v-ons-input>
+          </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div class="center">ライブラリ</div>
+          <div class="right">
+            <v-ons-input v-model="c.lib" placeholder="空欄でbtc"></v-ons-input>
           </div>
         </v-ons-list-item>
         <v-ons-list-item>

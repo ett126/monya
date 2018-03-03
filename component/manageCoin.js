@@ -16,7 +16,8 @@ module.exports=require("../js/lang.js")({ja:require("./ja/manageCoin.html"),en:r
       unit:"",
       apiEndpoint:""
     },
-    c:{}
+    c:{},
+    resetCur:false
   }),
   methods:{
     push(){
@@ -90,7 +91,7 @@ module.exports=require("../js/lang.js")({ja:require("./ja/manageCoin.html"),en:r
         bip44:cur.bip44||{},
         bip49:cur.bip49||{},
         bip21:cur.bip21,
-        defaultFeeSatPerByte:cur.defaultFeeSatPerByte,
+        defaultFeeSatPerByte:cur.defaultFeeSatPerByte|0,
         icon:cur.icon,
         defaultAPIEndpoint:cur.apiEndpoints[0],
         
@@ -126,10 +127,20 @@ module.exports=require("../js/lang.js")({ja:require("./ja/manageCoin.html"),en:r
     save(coinId){
       storage.get("customCoins").then(r=>{
         r=r||[]
+        const n = this.c.network
+        n.bip32.public = n.bip32.public|0
+        n.bip32.private = n.bip32.private|0
+        n.pubKeyHash = n.pubKeyHash|0
+        n.scriptHash = n.scriptHash|0
+        n.wif = n.wif
         r.push(this.c)
         this.editDlg=false
         return storage.set("customCoins",r)
       })
+    },
+    reset(){
+      this.resetCur=false
+      return storage.set("customCoins",[])
     }
   },
   
